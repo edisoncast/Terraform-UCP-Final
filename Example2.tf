@@ -16,6 +16,10 @@ variable "subnet1_address_space" {
     default = "10.0.0.0/24" 
 }
 
+variable "subnet2_address_space" {
+    default = "10.0.1.0/24" 
+}
+
 
 #Declare the providers
 
@@ -60,10 +64,17 @@ data "http" "mypublicipv4" {
 resource "aws_vpc" "vpc" {
     cidr_block = var.network_address_space
     enable_dns_hostnames = true
+
+    tags = {
+    Name = "UCP VPC"
+  }
 }
 
 resource "aws_internet_gateway" "igw" {
     vpc_id = aws_vpc.vpc.id  
+     tags = {
+    Name = "UCP igw"
+  }
 }
 
 resource "aws_subnet" "subnet1" {
@@ -71,6 +82,21 @@ resource "aws_subnet" "subnet1" {
     vpc_id = aws_vpc.vpc.id 
     map_public_ip_on_launch = true
     availability_zone = data.aws_availability_zones.available.names[0]
+
+     tags = {
+    Name = "UCP subnet-1"
+  }
+}
+
+resource "aws_subnet" "subnet2" {
+    cidr_block = var.subnet2_address_space
+    vpc_id = aws_vpc.vpc.id 
+    map_public_ip_on_launch = true
+    availability_zone = data.aws_availability_zones.available.names[1]
+
+     tags = {
+    Name = "UCP subnet-2"
+  }
 }
 
 #Routing
